@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/bike-parking-iot/static/css/main.a44674ed.css",
+    "main.js": "/bike-parking-iot/static/js/main.6573c9c5.js",
+    "static/js/453.3afa8243.chunk.js": "/bike-parking-iot/static/js/453.3afa8243.chunk.js",
+    "index.html": "/bike-parking-iot/index.html",
+    "main.a44674ed.css.map": "/bike-parking-iot/static/css/main.a44674ed.css.map",
+    "main.6573c9c5.js.map": "/bike-parking-iot/static/js/main.6573c9c5.js.map",
+    "453.3afa8243.chunk.js.map": "/bike-parking-iot/static/js/453.3afa8243.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.a44674ed.css",
+    "static/js/main.6573c9c5.js"
+  ]
+}
