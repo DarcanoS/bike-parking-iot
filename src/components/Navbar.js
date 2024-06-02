@@ -1,22 +1,22 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { db } from '../firebase-config';
 import { collection, query, where, getDocs } from 'firebase/firestore';
+import { db } from '../firebase-config';
 
 const Navbar = () => {
-  const { currentUser, userRole, logout } = useAuth();
-  const [hasReservation, setHasReservation] = useState(false);
+  const { currentUser, logout } = useAuth();
   const navigate = useNavigate();
+  const [hasReservations, setHasReservations] = useState(false);
 
   useEffect(() => {
     const checkReservations = async () => {
       if (currentUser) {
-        const q = query(collection(db, 'reservations'), where('userId', '==', currentUser.uid));
-        const querySnapshot = await getDocs(q);
-        if (!querySnapshot.empty) {
-          setHasReservation(true);
-        }
+        const reservationsRef = collection(db, 'reservations');
+        const q = query(reservationsRef, where('userId', '==', currentUser.uid));
+        const reservationsSnap = await getDocs(q);
+
+        setHasReservations(!reservationsSnap.empty);
       }
     };
 
@@ -33,33 +33,54 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="bg-gray-800 p-4">
-      <div className="container mx-auto flex justify-between items-center">
-        <Link to="/home" className="text-white text-lg font-semibold">Home</Link>
-        <div className="flex space-x-4">
+    <nav className="p-4 bg-gray-800">
+      <div className="container flex items-center justify-between mx-auto">
+        <Link to="/" className="text-lg font-bold text-white">
+          Bike Parking IoT
+        </Link>
+        <div>
           {currentUser && (
             <>
-              {userRole === 'admin' && (
+              <Link to="/" className="mx-2 text-gray-300 hover:text-white">
+                Home
+              </Link>
+              {currentUser && currentUser.email === 'admin@example.com' ? (
                 <>
-                  <Link to="/manage-parking" className="text-white">Gestionar Parqueaderos</Link>
-                  <Link to="/manage-users" className="text-white">Gestionar Usuarios</Link>
+                  <Link to="/manage-parking" className="mx-2 text-gray-300 hover:text-white">
+                    Gestionar Parqueaderos
+                  </Link>
+                  <Link to="/manage-users" className="mx-2 text-gray-300 hover:text-white">
+                    Gestionar Usuarios
+                  </Link>
                 </>
-              )}
-              {userRole === 'user' && (
+              ) : (
                 <>
-                  <Link to="/user-view" className="text-white">Lista de Parqueaderos</Link>
-                  {hasReservation && (
-                    <Link to="/user-reservations" className="text-white">Mis Reservas</Link>
+                  <Link to="/user-view" className="mx-2 text-gray-300 hover:text-white">
+                    Parqueaderos
+                  </Link>
+                  {hasReservations && (
+                    <Link to="/user-reservations" className="mx-2 text-gray-300 hover:text-white">
+                      Mis Reservas
+                    </Link>
                   )}
                 </>
               )}
-              <button onClick={handleLogout} className="text-white">Cerrar Sesión</button>
+              <button
+                onClick={handleLogout}
+                className="px-3 py-2 ml-2 text-white bg-red-600 rounded hover:bg-red-700"
+              >
+                Cerrar Sesión
+              </button>
             </>
           )}
           {!currentUser && (
             <>
-              <Link to="/signin" className="text-white">Iniciar Sesión</Link>
-              <Link to="/signup" className="text-white">Registrarse</Link>
+              <Link to="/signin" className="mx-2 text-gray-300 hover:text-white">
+                Iniciar Sesión
+              </Link>
+              <Link to="/signup" className="mx-2 text-gray-300 hover:text-white">
+                Registrarse
+              </Link>
             </>
           )}
         </div>

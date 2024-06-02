@@ -1,140 +1,143 @@
-# Parqueadero de Bicicletas IoT
-
-Este proyecto es una aplicación web para la gestión y automatización de un parqueadero de bicicletas utilizando IoT. Incluye autenticación de usuarios, roles de usuario y administrador, y diferentes funcionalidades basadas en estos roles.
+# Proyecto de Automatización de Parqueadero de Bicicletas con IoT
 
 ## Descripción
 
-### Funcionalidades
+Este proyecto tiene como objetivo la automatización de un parqueadero de bicicletas utilizando IoT. La aplicación permite a los usuarios reservar y utilizar espacios de estacionamiento de bicicletas a través de una aplicación web. Además, proporciona una interfaz de administración para gestionar usuarios y parqueaderos.
 
-- **Autenticación de Usuarios**:
-  - Registro de nuevos usuarios.
-  - Inicio de sesión para usuarios registrados.
-  - Cierre de sesión.
+## Características
 
-- **Roles de Usuario**:
-  - **Usuario**: Puede ver su perfil y acceder a funcionalidades básicas.
-  - **Administrador**: Puede gestionar usuarios y parqueaderos.
+### Para Usuarios Normales
 
-- **Páginas**:
-  - **Inicio**: Página de bienvenida con el correo electrónico del usuario.
-  - **Panel de Administración**: Página para que los administradores gestionen la aplicación.
-  - **Gestionar Usuarios**: Página para que los administradores gestionen los usuarios.
-  - **Gestionar Parqueaderos**: Página para que los administradores gestionen los parqueaderos.
+- Ver lista de parqueaderos disponibles.
+- Ver detalles de los parqueaderos, incluyendo nombre, dirección y ubicación en un mapa.
+- Reservar un espacio de estacionamiento.
+- Utilizar un espacio de estacionamiento.
+- Ver sus reservas actuales y el tiempo restante.
+
+### Para Administradores
+
+- Gestionar usuarios (agregar, editar, eliminar).
+- Gestionar parqueaderos (agregar, editar, eliminar).
+- Configurar espacios de estacionamiento para cada parqueadero.
+- Generar códigos QR para los espacios de estacionamiento.
 
 ## Tecnologías Utilizadas
 
-- **Frontend**: React, Tailwind CSS.
-- **Backend**: Firebase (Autenticación y Firestore para la base de datos).
-- **Despliegue**: GitHub Pages.
+- **Frontend:** React, Tailwind CSS
+- **Backend:** Firebase (Authentication, Firestore)
+- **Mapa:** Mapbox GL
+- **Código QR:** qrcode.react
 
-## Instalación y Configuración
+## Requisitos Previos
 
-### Requisitos
+- Node.js y npm instalados en tu máquina.
+- Una cuenta en Firebase.
+- Un token de Mapbox.
 
-- Node.js
-- npm (Node Package Manager)
+## Configuración del Proyecto
 
-### Clonar el Repositorio
+### Paso 1: Clonar el Repositorio
 
 ```bash
-git clone https://github.com/tu-usuario/bike-parking-iot.git
+git clone https://github.com/darcanos/bike-parking-iot.git
 cd bike-parking-iot
 ```
 
-### Instalar Dependencias
+### Paso 2: Instalar Dependencias
 
 ```bash
 npm install
 ```
 
-### Configurar Firebase
+### Paso 3: Configurar Firebase
 
-1. Crea un proyecto en [Firebase Console](https://console.firebase.google.com/).
-2. Habilita la autenticación por correo y contraseña.
-3. Configura Firestore Database y crea una colección `users`.
-4. Añade un documento para el administrador con el siguiente formato:
+1. Crea un proyecto en Firebase.
+2. Habilita Authentication y Firestore.
+3. Copia la configuración de Firebase y pégala en un archivo `firebase-config.js` en la carpeta `src`:
 
-   ```json
-   {
-     "email": "admin@example.com",
-     "role": "admin"
-   }
-   ```
+```javascript
+import { initializeApp } from 'firebase/app';
+import { getAuth } from 'firebase/auth';
+import { getFirestore } from 'firebase/firestore';
 
-5. Copia la configuración de Firebase y reemplaza los valores en `firebase-config.js`:
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_AUTH_DOMAIN",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_STORAGE_BUCKET",
+  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+  appId: "YOUR_APP_ID"
+};
 
-   ```javascript
-   import { initializeApp } from 'firebase/app';
-   import { getAuth } from 'firebase/auth';
-   import { getFirestore } from 'firebase/firestore';
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
 
-   const firebaseConfig = {
-     apiKey: "YOUR_API_KEY",
-     authDomain: "YOUR_AUTH_DOMAIN",
-     projectId: "YOUR_PROJECT_ID",
-     storageBucket: "YOUR_STORAGE_BUCKET",
-     messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-     appId: "YOUR_APP_ID",
-   };
+export { auth, db };
+```
 
-   const app = initializeApp(firebaseConfig);
-   const auth = getAuth(app);
-   const db = getFirestore(app);
+### Paso 4: Configurar Mapbox
 
-   export { auth, db };
-   ```
+1. Obtén un token de acceso de Mapbox.
+2. Añádelo en el componente `Map.js`:
 
-### Ejecutar la Aplicación
+```javascript
+const MAPBOX_TOKEN = 'YOUR_MAPBOX_ACCESS_TOKEN';
+```
 
-Para ejecutar la aplicación localmente, usa el siguiente comando:
+### Paso 5: Ejecutar la Aplicación en Desarrollo
 
 ```bash
 npm start
 ```
 
-### Desplegar la Aplicación
+### Paso 6: Desplegar en GitHub Pages
 
-Para desplegar la aplicación en GitHub Pages, sigue estos pasos:
+1. Asegúrate de tener el paquete `gh-pages` instalado:
 
-1. Asegúrate de tener configurado el campo `homepage` en `package.json` con la URL de tu repositorio:
+```bash
+npm install gh-pages --save-dev
+```
 
-   ```json
-   "homepage": "https://darcanos.github.io/bike-parking-iot",
-   ```
+2. Agrega los siguientes scripts a tu `package.json`:
 
-2. Ejecuta el siguiente comando para desplegar:
+```json
+"scripts": {
+  "predeploy": "npm run build",
+  "deploy": "gh-pages -d build",
+  ...
+}
+```
 
-   ```bash
-   npm run deploy
-   ```
+3. Despliega la aplicación:
+
+```bash
+npm run deploy
+```
 
 ## Estructura del Proyecto
 
-```plaintext
-src/
-├── components/
-│   ├── AuthProvider.js
-│   ├── Home.js
-│   ├── SignIn.js
-│   ├── SignUp.js
-│   ├── AdminDashboard.js
-│   ├── ManageUsers.js
-│   ├── ManageParking.js
-│   ├── Navbar.js
-│   ├── PrivateRoute.js
-│   ├── AdminRoute.js
-│   └── Logout.js
-├── firebase-config.js
-├── App.js
-├── index.css
-├── index.js
-└── reportWebVitals.js
 ```
-
-## Contribuciones
-
-Las contribuciones son bienvenidas. Si deseas contribuir, por favor realiza un fork del repositorio y crea una pull request con tus cambios.
-
-## Licencia
-
-Este proyecto está licenciado bajo la Licencia MIT.
+src/
+  components/
+    ManageUsers.js
+    ManageParking.js
+    ManageSpaces.js
+    SignIn.js
+    SignUp.js
+    Home.js
+    Navbar.js
+    PrivateRoute.js
+    UserView.js
+    ParkingDetails.js
+    UserReservations.js
+    Map.js
+  contexts/
+    AuthContext.js
+  firebase-config.js
+  App.js
+  index.js
+  index.css
+package.json
+README.md
+```

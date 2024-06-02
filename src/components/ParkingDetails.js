@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { db } from '../firebase-config';
 import { doc, getDoc, updateDoc, collection, query, where, getDocs, addDoc } from 'firebase/firestore';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext'; // Asegúrate de importar useAuth
+import { useAuth } from '../contexts/AuthContext';
 import Map from './Map';
 
 function ParkingDetails() {
@@ -49,7 +49,7 @@ function ParkingDetails() {
       const spaceIndex = spaces.findIndex(space => space.id === spaceId);
       const updatedSpaces = [...spaces];
       updatedSpaces[spaceIndex].status = 'reserved';
-      
+
       await updateDoc(doc(db, 'parkings', parkingId), { spaces: updatedSpaces });
       setSpaces(updatedSpaces);
 
@@ -70,6 +70,9 @@ function ParkingDetails() {
         status: 'reserved',
         timestamp: Date.now(),
       });
+
+      // Notificar al Navbar sobre la nueva reserva
+      localStorage.setItem('newReservation', Date.now());
     } catch (error) {
       console.error('Error reservando el espacio: ', error);
     }
@@ -106,6 +109,9 @@ function ParkingDetails() {
         status: 'in use',
         timestamp: Date.now(),
       });
+
+      // Notificar al Navbar sobre el uso
+      localStorage.setItem('newReservation', Date.now());
     } catch (error) {
       console.error('Error poniendo en uso el espacio: ', error);
     }
@@ -116,13 +122,13 @@ function ParkingDetails() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
-        <div className="flex justify-between items-center">
+    <div className="flex flex-col items-center justify-center min-h-screen px-4 py-12 bg-gray-100 sm:px-6 lg:px-8">
+      <div className="w-full max-w-md space-y-8">
+        <div className="flex items-center justify-between">
           <h2 className="text-3xl font-extrabold text-gray-900">Detalles del Parqueadero</h2>
           <button
             onClick={() => navigate(-1)}
-            className="group relative flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-gray-600 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+            className="relative flex justify-center px-4 py-2 text-sm font-medium text-white bg-gray-600 border border-transparent rounded-md group hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
           >
             Atrás
           </button>
@@ -131,26 +137,28 @@ function ParkingDetails() {
           <p><strong>Nombre:</strong> {parking.name}</p>
           <p><strong>Dirección:</strong> {parking.address}</p>
         </div>
-        <div className="mt-4">
+        <div className="mb-72">
           <Map latitude={parseFloat(parking.location.latitude)} longitude={parseFloat(parking.location.longitude)} />
         </div>
-        <div className="mt-12">
+        <div><br></br>
+        </div>
+        <div className="mt-96">
           <h3 className="text-2xl font-bold">Espacios de Estacionamiento</h3>
           {spaces.map((space, index) => (
-            <div key={space.id} className="mt-4 p-4 border rounded-md bg-white shadow-md">
+            <div key={space.id} className="p-4 mt-4 bg-white border rounded-md shadow-md">
               <p><strong>Espacio:</strong> {index + 1}</p>
               <p><strong>Estado:</strong> {space.status}</p>
               {space.status === 'available' && (
                 <div className="flex space-x-4">
                   <button
                     onClick={() => handleReserve(space.id)}
-                    className="mt-2 w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                    className="flex justify-center w-full px-4 py-2 mt-2 text-sm font-medium text-white bg-green-600 border border-transparent rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
                   >
                     Reservar
                   </button>
                   <button
                     onClick={() => handleUse(space.id)}
-                    className="mt-2 w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                    className="flex justify-center w-full px-4 py-2 mt-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                   >
                     Usar
                   </button>
