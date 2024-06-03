@@ -4,6 +4,7 @@ import { doc, getDoc, updateDoc, collection, query, where, getDocs, addDoc } fro
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import Map from './Map';
+import updateSpaceStatus from '../utils/updateSpaceStatus'; // Importar la función
 
 function ParkingDetails() {
   const { parkingId } = useParams();
@@ -71,6 +72,10 @@ function ParkingDetails() {
         timestamp: Date.now(),
       });
 
+      // Llamar a la función updateSpaceStatus con el token y el estado correspondiente
+      const space = updatedSpaces[spaceIndex];
+      await updateSpaceStatus(space.token, 0); // 0 para reservado
+
       // Notificar al Navbar sobre la nueva reserva
       localStorage.setItem('newReservation', Date.now());
     } catch (error) {
@@ -109,6 +114,10 @@ function ParkingDetails() {
         status: 'in use',
         timestamp: Date.now(),
       });
+
+      // Llamar a la función updateSpaceStatus con el token y el estado correspondiente
+      const space = updatedSpaces[spaceIndex];
+      await updateSpaceStatus(space.token, 0); // 0 para en uso
 
       // Notificar al Navbar sobre el uso
       localStorage.setItem('newReservation', Date.now());

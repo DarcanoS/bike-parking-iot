@@ -63,6 +63,9 @@ const Navbar = () => {
                       Mis Reservas
                     </Link>
                   )}
+                  <Link to="/qr-scanner" className="mx-2 text-gray-300 hover:text-white">
+                    Escanear QR
+                  </Link>
                 </>
               )}
               <button

@@ -85,13 +85,43 @@ export { auth, db };
 const MAPBOX_TOKEN = 'YOUR_MAPBOX_ACCESS_TOKEN';
 ```
 
-### Paso 5: Ejecutar la Aplicación en Desarrollo
+### Paso 5: Configurar Tailwind CSS
+
+1. Inicializa Tailwind CSS en el proyecto:
+
+```bash
+npx tailwindcss init -p
+```
+
+2. Configura el archivo `tailwind.config.js`:
+
+```javascript
+module.exports = {
+  content: [
+    "./src/**/*.{js,jsx,ts,tsx}",
+  ],
+  theme: {
+    extend: {},
+  },
+  plugins: [],
+}
+```
+
+3. Añade las directivas de Tailwind CSS en el archivo `src/index.css`:
+
+```css
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+```
+
+### Paso 6: Ejecutar la Aplicación en Desarrollo
 
 ```bash
 npm start
 ```
 
-### Paso 6: Desplegar en GitHub Pages
+### Paso 7: Desplegar en GitHub Pages
 
 1. Asegúrate de tener el paquete `gh-pages` instalado:
 
@@ -132,12 +162,30 @@ src/
     ParkingDetails.js
     UserReservations.js
     Map.js
+    QrScanner.js
   contexts/
     AuthContext.js
   firebase-config.js
+  utils/
+    updateSpaceStatus.js
   App.js
   index.js
   index.css
+tailwind.config.js
 package.json
 README.md
+```
+
+## Dependencias
+
+Para instalar todas las dependencias necesarias, usa el siguiente comando:
+
+```bash
+npm install react-router-dom firebase mapbox-gl qrcode.react axios
+```
+
+Si encuentras problemas con las dependencias, intenta usar:
+
+```bash
+npm install --legacy-peer-deps
 ```

@@ -3,6 +3,7 @@ import { db } from '../firebase-config';
 import { doc, getDoc, updateDoc, arrayRemove, collection, getDocs } from 'firebase/firestore';
 import { useParams, useNavigate } from 'react-router-dom';
 import QRCode from 'qrcode.react';
+import updateSpaceStatus from '../utils/updateSpaceStatus'; // Importar la función correctamente
 
 const ManageSpaces = () => {
   const { parkingId } = useParams();
@@ -77,6 +78,10 @@ const ManageSpaces = () => {
       await updateDoc(doc(db, 'parkings', parkingId), { spaces: updatedSpaces });
       setSpaces(updatedSpaces);
       alert('Estado del espacio actualizado exitosamente');
+
+      // Llamar a la función updateSpaceStatus con el token y el estado correspondiente
+      await updateSpaceStatus(space.token, newStatus === 'available' ? 1 : 0);
+
     } catch (error) {
       console.error('Error actualizando el estado del espacio: ', error);
     }

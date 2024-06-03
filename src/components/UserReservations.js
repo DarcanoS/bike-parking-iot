@@ -3,6 +3,7 @@ import { db } from '../firebase-config';
 import { doc, getDoc, collection, query, where, getDocs, updateDoc, deleteDoc } from 'firebase/firestore';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import updateSpaceStatus from '../utils/updateSpaceStatus'; // Importar la función
 
 const UserReservations = () => {
   const { currentUser } = useAuth();
@@ -22,6 +23,7 @@ const UserReservations = () => {
       });
 
       setReservations(reservationsData);
+      removeDuplicateReservations(reservationsData);
     };
 
     fetchReservations();
@@ -49,6 +51,25 @@ const UserReservations = () => {
     return () => clearInterval(interval);
   }, []);
 
+  const removeDuplicateReservations = async (reservationsData) => {
+    const spaceIds = {};
+    const duplicates = [];
+    
+    reservationsData.forEach(reservation => {
+      if (spaceIds[reservation.spaceId]) {
+        duplicates.push(reservation.id);
+      } else {
+        spaceIds[reservation.spaceId] = true;
+      }
+    });
+
+    for (const duplicateId of duplicates) {
+      await deleteDoc(doc(db, 'reservations', duplicateId));
+    }
+    
+    setReservations(reservationsData.filter(reservation => !duplicates.includes(reservation.id)));
+  };
+
   const handleCancelReservation = async (reservationId, spaceId, parkingId) => {
     try {
       // Eliminar la reserva de Firestore
@@ -66,6 +87,10 @@ const UserReservations = () => {
         });
 
         await updateDoc(parkingRef, { spaces });
+
+        // Llamar a la función updateSpaceStatus con el token y el estado correspondiente
+        const space = spaces.find(space => space.id === spaceId);
+        await updateSpaceStatus(space.token, 1); // 1 para disponible
       }
 
       // Actualizar el estado local de las reservas
